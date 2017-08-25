@@ -8,19 +8,21 @@
     "48": "icons/cookie.png"
   },
 
+  "applications": {
+  "gecko": {
+    "id": "nandukalidindi@gmail.com"
+    }
+  },
+
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "tabs",
+    "storage"
   ],
 
   "browser_action": {
     "default_icon": "icons/cookie.png",
     "default_title": "Cookie sniffer",
-    "default_popup": "popup/choose_beast.html"
-  },
-
-  "web_accessible_resources": [
-    "beasts/frog.jpg",
-    "beasts/turtle.jpg",
-    "beasts/snake.jpg"
-  ]
+    "default_popup": "popup/server-info.html"
+  }
 }
