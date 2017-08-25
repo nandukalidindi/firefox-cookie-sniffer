@@ -1,0 +1,26 @@
+{
+  "description": "Firefox add-on to log and send cookies to ACHE crawl server",
+  "manifest_version": 2,
+  "name": "Cookie sniffer",
+  "version": "1.0",
+  "homepage_url": "https://github.com/nandukalidindi/firefox-cookie-sniffer",
+  "icons": {
+    "48": "icons/cookie.png"
+  },
+
+  "permissions": [
+    "activeTab"
+  ],
+
+  "browser_action": {
+    "default_icon": "icons/cookie.png",
+    "default_title": "Cookie sniffer",
+    "default_popup": "popup/choose_beast.html"
+  },
+
+  "web_accessible_resources": [
+    "beasts/frog.jpg",
+    "beasts/turtle.jpg",
+    "beasts/snake.jpg"
+  ]
+}
