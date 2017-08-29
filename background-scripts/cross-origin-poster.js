@@ -10,52 +10,36 @@ browser.runtime.onMessage.addListener(function(request, sender, callback) {
     intervalBuiltSerializedCookie = response.serializableCookie;
 
     if(request.method === 'startTailing') {
-      setTimeout(function() {
-        var interval = setInterval(function() {
-          if(attempts > 10)
-            clearInterval(interval);
+      var interval = setInterval(function() {
+        if(attempts > 10)
+          clearInterval(interval);
 
-          if(initialCookie !== intervalBuiltCookie) {
-            var data = {};
-            data[request.origin] = intervalBuiltSerializedCookie;
-            $.ajax({
-             url: "http://localhost:8081/cookies",
-             method: "POST",
-             contentType: "application/json",
-             data: JSON.stringify(data),
-             success: function(response) {
-              //  alert("SUCCESSFULLY SENT TO ACHE");
-             },
-             error: function(err) {
-               console.log(err);
-               callback(null);
-             }
-           })
+        if(initialCookie !== intervalBuiltCookie) {
+          var data = {};
+          data[request.origin] = intervalBuiltSerializedCookie;
 
-           $.ajax({
-            url: "http://localhost:8080/cookies",
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(data),
-            success: function(response) {
-              // alert("SUCCESSFULLY SENT TO ACHE");
-            },
-            error: function(err) {
-              console.log(err);
+          browser.storage.sync.get('ache', function(response) {
+            if(response.ache) {
+              postToAche(response.ache, data);
             }
-          })
-            console.log("SUCCESSFULLY SENT COOKIE ", intervalBuiltCookie);
-            clearInterval(interval);
-          }
-          attempts++;
-          buildCookie(request.domain).then(function(response) {
-            intervalBuiltCookie = response.stringifiedCookie;
-            intervalBuiltSerializedCookie = response.serializableCookie;
           });
-        }, 2000);
-      }, 10000);
+          clearInterval(interval);
+        }
+        attempts++;
+        buildCookie(request.domain).then(function(response) {
+          intervalBuiltCookie = response.stringifiedCookie;
+          intervalBuiltSerializedCookie = response.serializableCookie;
+        });
+      }, 3000);
     } else if (request.method === 'cookieMessenger') {
-      //send response to ACHE which is intervalBuiltCookie.serializableCookie
+      var data = {};
+      data[request.origin] = intervalBuiltSerializedCookie;
+
+      browser.storage.sync.get('ache', function(response) {
+        if(response.ache) {
+          postToAche(response.ache, data);
+        }
+      });
     }
   });
 });
@@ -99,4 +83,19 @@ function mutateCookieResponse(cookie) {
     mutatedObject[requiredKeyMap[key]] = cookie[key];
   });
   return mutatedObject;
+}
+
+function postToAche(url, data) {
+  $.ajax({
+   url: url + "/cookies",
+   method: "POST",
+   contentType: "application/json",
+   data: JSON.stringify(data),
+   success: function(response) {
+     console.log(response);
+   },
+   error: function(err) {
+     console.log(err);
+   }
+ })
 }
